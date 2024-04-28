@@ -19,7 +19,8 @@ public class Cliente {
     
     @Column(name = "RAZON_SOCIAL")
     private String razonSocial;
-    
+
+    @Column(name = "CUIT")
     private String cuit;
 
     @Column(name = "CORREO_ELECTRONICO")
