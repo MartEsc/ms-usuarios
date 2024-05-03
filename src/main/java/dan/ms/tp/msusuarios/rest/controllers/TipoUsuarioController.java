@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,12 +24,14 @@ public class TipoUsuarioController {
 
 
     @GetMapping
+    @PreAuthorize("hasRole('lectura')")
     public ResponseEntity<List<TipoUsuario>> getAllTipoUsuario(){
         return ResponseEntity.ok().body(tipoUsrRepo.findAll());
     }
 
     
-    @GetMapping("/search")    
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('lectura')")
     public ResponseEntity<Optional<TipoUsuario>> getTipoUsuario(@RequestParam(name = "tipo", required = true) String tipo) {
         Optional<TipoUsuario> tipoUsuario;
         tipoUsuario = tipoUsrRepo.findOneByTipo(tipo);

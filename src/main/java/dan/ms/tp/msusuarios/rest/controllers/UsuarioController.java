@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,20 +34,23 @@ public class UsuarioController {
         return new ResponseEntity<>(usuario, HttpStatus.OK);
     }*/
     @GetMapping(value="/idUsuario")
+    @PreAuthorize("hasRole('lectura')")
     public ResponseEntity<Optional<Usuario>> getUsuarioById(@RequestParam(value="id",required=true) Integer id) {
         Optional<Usuario> usuario;
         usuario = usuarioService.getUsuarioById(id);
         return new ResponseEntity<>(usuario, HttpStatus.OK);
     }
 
-    @GetMapping("/cliente")    
+    @GetMapping("/cliente")
+    @PreAuthorize("hasRole('lectura')")
     public ResponseEntity<List<Usuario>> getUsuariosByCliente(@RequestParam(name = "cliente", required = true) Integer cliente){
         List<Usuario> usuarios;
         usuarios = usuarioService.getUsuariosByCliente(cliente);
         return new ResponseEntity<>(usuarios, HttpStatus.OK);
     }
 
-    @GetMapping("/clienteAndTipo")    
+    @GetMapping("/clienteAndTipo")
+    @PreAuthorize("hasRole('lectura')")
     public ResponseEntity<List<Usuario>> getUsuariosByClienteAndTipoUsuario(@RequestParam(name = "cliente", required = true) Integer cliente,@RequestParam(name ="tipoUsuario", required = true) Integer tipo){
         List<Usuario> usuarios;
         usuarios = usuarioService.getUsuariosByClienteAndTipoUsuario(cliente,tipo);
@@ -54,12 +58,14 @@ public class UsuarioController {
     }
 
     @PostMapping(value="/altaUsuario")
+    @PreAuthorize("hasRole('escritura') or hasRole('administracion')")
     public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario){
         Usuario usuarioNuevo = usuarioService.createUsuario(usuario);
         return new ResponseEntity<>(usuarioNuevo, HttpStatus.CREATED);
     }
 
     @PutMapping(value="/modificarUsuario")
+    @PreAuthorize("hasRole('escritura') or hasRole('administracion')")
     public ResponseEntity<Usuario> modifyUsuario(@RequestBody Usuario usuario) {
         return ResponseEntity.ok().body(usuarioService.modifyUsuario(usuario));
     }
@@ -69,6 +75,7 @@ public class UsuarioController {
         return ResponseEntity.ok().body(usuarioService.deleteUsuario(id));
     }*/
     @DeleteMapping("/bajaUsuario")
+    @PreAuthorize("hasRole('escritura') or hasRole('administracion')")
     public String deleteById(@RequestParam(value = "id")  Integer id) {
         usuarioService.deleteUsuario(id);
        return "Delete by id called";
