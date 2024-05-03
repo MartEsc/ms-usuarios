@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     public AbstractAuthenticationToken convert(Jwt jwt) {
         Collection<GrantedAuthority> authorities =
                 Stream.concat(jwtGrantedAuthoritiesConverter.convert(jwt).stream(), extractResourceRoles(jwt).stream())
-                        .toList();
+                        .collect(Collectors.toList());
         return new JwtAuthenticationToken(jwt, authorities, getPrincipleName(jwt));
     }
 
@@ -49,7 +50,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
         resourceRoles = (Collection<String>) resource.get("roles");
         return resourceRoles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_".concat(role)))
-                        .toList();
+                .collect(Collectors.toList());
     }
     private String getPrincipleName(Jwt jwt){
         String claimName = JwtClaimNames.SUB;
