@@ -59,8 +59,15 @@ public class UsuarioController {
 
     @PostMapping(value="/altaUsuario")
     @PreAuthorize("hasRole('escritura') or hasRole('administracion')")
-    public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario){
-        Usuario usuarioNuevo = usuarioService.createUsuario(usuario);
+    public ResponseEntity<?> createUsuario(@RequestBody Usuario usuario){
+        Usuario usuarioNuevo = new Usuario();
+        try {
+            usuarioNuevo = usuarioService.createUsuario(usuario);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(usuarioNuevo, HttpStatus.CREATED);
     }
 
@@ -69,11 +76,7 @@ public class UsuarioController {
     public ResponseEntity<Usuario> modifyUsuario(@RequestBody Usuario usuario) {
         return ResponseEntity.ok().body(usuarioService.modifyUsuario(usuario));
     }
-/*
-    @DeleteMapping(value="/bajaUsuario")
-    public ResponseEntity<Void> deleteUsuario(@RequestBody Integer id){
-        return ResponseEntity.ok().body(usuarioService.deleteUsuario(id));
-    }*/
+    
     @DeleteMapping("/bajaUsuario")
     @PreAuthorize("hasRole('escritura') or hasRole('administracion')")
     public String deleteById(@RequestParam(value = "id")  Integer id) {

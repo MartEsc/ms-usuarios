@@ -9,7 +9,7 @@ public interface UsuarioService {
    
     //Optional<Usuario> findOneByuserName(String userName);
 
-    Usuario createUsuario(Usuario usuario);
+    Usuario createUsuario(Usuario usuario) throws Exception;
     
     void deleteUsuario(Integer id);
 

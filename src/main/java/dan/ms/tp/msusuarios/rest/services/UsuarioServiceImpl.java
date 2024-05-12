@@ -28,11 +28,11 @@ public class UsuarioServiceImpl implements UsuarioService{
     }*/
     
     @Override
-    public Usuario createUsuario(Usuario usuario) {
-        
+    public Usuario createUsuario(Usuario usuario) throws Exception {
+        validarReglasNegocio(usuario);
         return usuarioJpaRepository.save(usuario);
-        
     }
+
     @Override
     public void deleteUsuario(Integer id) {
     
@@ -61,5 +61,49 @@ public class UsuarioServiceImpl implements UsuarioService{
         Optional<TipoUsuario> tipoUsuario = tipoUsuarioJpaRepository.findById(idTipoUsuario);
        
         return usuarioJpaRepository.findByClienteAndTipoUsuario(cliente.get(),tipoUsuario.get());
+    }
+
+    private void validarReglasNegocio(Usuario usuario) throws Exception {
+        //validacion credenciales
+        if(!(usuario.getUserName()!=null)){
+            throw new Exception("El campo usuario no puede estar vacío");
+        }
+        String password = usuario.getPassword();
+
+        
+        if (password.length() < 12) 
+        {
+            throw new Exception("La contraseña debe tener al menos 12 caracteres.");
+        }
+        
+        
+
+
+        //Validacion cliente
+        Optional<Cliente> cliente = clienteJpaRepository.findById(usuario.getCliente().getId());
+        if(!cliente.isPresent()){
+            throw new Exception("No hay cliente correspondiente al usuario");
+        }
+        else{
+            usuario.setCliente(cliente.get());
+        }
+
+        //validacion tipoUsuario
+        Optional<TipoUsuario> tipoGerente = tipoUsuarioJpaRepository.findOneByTipo("GERENTE");
+
+        if(!tipoGerente.isPresent()){
+            throw new Exception("No hay cliente correspondiente al usuario");
+        }
+        else{
+            usuario.setTipoUsuario(tipoGerente.get());
+        }
+        //validacion cantidadGerentes
+        List<Usuario> usuariosGerentes = usuarioJpaRepository.findByClienteAndTipoUsuario(usuario.getCliente(), tipoGerente.get());
+        if(usuariosGerentes.size()>1){
+            throw new Exception("No puede haber mas de un gerente para el usuario "+usuario.getUserName());
+        }
+
+        
+
     }
 }
